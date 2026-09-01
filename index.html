@@ -27,7 +27,6 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
-            animation: slideDown 0.5s ease;
         }
 
         .header h1 {
@@ -62,13 +61,6 @@
             padding: 30px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: fadeInUp 0.6s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
         }
 
         .card-title {
@@ -85,23 +77,14 @@
             font-weight: 700;
             color: #fff;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .card-subtext {
-            font-size: 1.2em;
-            color: #d0d0d0;
-            opacity: 0.8;
         }
 
         .card-label {
             font-size: 0.95em;
             color: #b0b0b0;
             margin-top: 15px;
-            font-weight: 500;
         }
 
-        /* Card específicos com cores */
         .card.venda-total {
             border-left: 8px solid #4CAF50;
         }
@@ -165,17 +148,6 @@
             padding: 25px;
             margin-bottom: 20px;
             font-size: 1.3em;
-            animation: shake 0.5s ease;
-        }
-
-        .success {
-            background: rgba(76, 175, 80, 0.2);
-            border-left: 5px solid #4CAF50;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            text-align: center;
         }
 
         .update-status {
@@ -183,67 +155,6 @@
             margin-top: 30px;
             font-size: 1.1em;
             color: #d0d0d0;
-        }
-
-        .pulse {
-            animation: pulse 1s infinite;
-        }
-
-        /* Gráfico de Venda por Mercado */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-top: 20px;
-        }
-
-        /* Animações */
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-
-        /* Responsive para TV */
-        @media (min-width: 2560px) {
-            body {
-                font-size: 24px;
-            }
-            .header h1 {
-                font-size: 5em;
-            }
-            .card-value {
-                font-size: 4.5em;
-            }
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
 
         @media (max-width: 768px) {
@@ -264,10 +175,10 @@
         <div class="header">
             <h1>📊 Dashboard de Vendas</h1>
             <p>AnyMarketing - Atualizações em Tempo Real</p>
-            <div class="timestamp" id="timestamp"></div>
+            <div class="timestamp" id="timestamp">Carregando...</div>
         </div>
 
-        <div id="loading" class="loading" style="display:none;">
+        <div id="loading" class="loading">
             ⏳ Carregando dados...
         </div>
 
@@ -275,41 +186,34 @@
 
         <div id="content" style="display:none;">
             <div class="grid">
-                <!-- Venda Total -->
-                <div class="card venda-total" data-card="venda-total">
+                <div class="card venda-total">
                     <div class="card-title">💰 Venda Total</div>
                     <div class="card-value" id="vendaTotal">R$ 0,00</div>
                     <div class="card-label">Receita Total do Dia</div>
                 </div>
 
-                <!-- Quantidade de Pedidos -->
-                <div class="card pedidos" data-card="pedidos">
+                <div class="card pedidos">
                     <div class="card-title">📦 Pedidos</div>
                     <div class="card-value" id="quantidadePedidos">0</div>
                     <div class="card-label">Pedidos (sem cancelados)</div>
                 </div>
 
-                <!-- Ingresso Médio -->
-                <div class="card ingresso-medio" data-card="ingresso">
+                <div class="card ingresso-medio">
                     <div class="card-title">💳 Ticket Médio</div>
                     <div class="card-value" id="ingressoMedio">R$ 0,00</div>
                     <div class="card-label">Valor Médio por Pedido</div>
                 </div>
 
-                <!-- Taxa de Conversão -->
-                <div class="card taxa-conversao" data-card="taxa">
+                <div class="card taxa-conversao">
                     <div class="card-title">📈 Taxa de Conversão</div>
                     <div class="card-value" id="taxaConversao">0%</div>
                     <div class="card-label">Taxa de Conversão</div>
                 </div>
             </div>
 
-            <!-- Venda por Mercado -->
             <div class="card" style="grid-column: 1 / -1;">
                 <div class="card-title">🏪 Venda por Mercado</div>
-                <div class="mercados-grid" id="mercadosGrid">
-                    <!-- Preenchido dinamicamente -->
-                </div>
+                <div class="mercados-grid" id="mercadosGrid"></div>
             </div>
         </div>
 
@@ -318,72 +222,119 @@
         </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="api.js"></script>
     <script>
-        let updateInterval;
-        let countdownInterval;
+        // Configuração
+        const CONFIG = {
+            API_TOKEN: 'NzlGOUQ4QTMwRTlFQkVGOTIzMjI3NkZEQkYxN0E3RTk=.YY3YIulifD2rlJJR9NPQD+Vp6YKHg9lanwgSSyV7OmLjOk+12DSCeHJa0guaDv12gdyDB34DCCm+R+klnuXEsA==',
+            API_BASE_URL: 'https://api.anymarketing.com.br/v1',
+            TIMEOUT: 30000
+        };
 
-        async function loadDashboard() {
-            const loading = document.getElementById('loading');
-            const error = document.getElementById('error');
-            const content = document.getElementById('content');
-
-            loading.style.display = 'block';
-            error.style.display = 'none';
-            content.style.display = 'none';
-
+        // Fetch dados da API
+        async function fetchSalesData() {
             try {
-                const data = await fetchSalesData();
-                updateDashboard(data);
-                loading.style.display = 'none';
-                content.style.display = 'block';
-                error.style.display = 'none';
-                startCountdown();
-            } catch (err) {
-                console.error('Erro ao carregar dados:', err);
-                loading.style.display = 'none';
-                error.style.display = 'block';
-                error.innerHTML = `❌ Erro ao carregar dados: ${err.message}`;
-                content.style.display = 'none';
+                const today = new Date();
+                const startDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const endDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+
+                const url = `${CONFIG.API_BASE_URL}/orders?created_from=${startDay.toISOString()}&created_to=${endDay.toISOString()}`;
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${CONFIG.API_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const orders = data.data || data || [];
+
+                // Filtrar pedidos válidos
+                const validOrders = orders.filter(order => {
+                    const status = (order.status || '').toLowerCase();
+                    const invalidStatuses = ['cancelled', 'canceled', 'awaiting_payment', 'aguardando_pagamento'];
+                    return !invalidStatuses.includes(status);
+                });
+
+                const vendaTotal = validOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+                const quantidadePedidos = validOrders.length;
+                const ingressoMedio = quantidadePedidos > 0 ? vendaTotal / quantidadePedidos : 0;
+
+                // Mercados
+                const mercadoMap = {};
+                validOrders.forEach(order => {
+                    const mercado = order.marketplace || order.channel || 'Direto';
+                    mercadoMap[mercado] = (mercadoMap[mercado] || 0) + (order.total || 0);
+                });
+
+                const mercados = Object.entries(mercadoMap)
+                    .map(([nome, valor]) => ({
+                        nome,
+                        valor,
+                        percentual: vendaTotal > 0 ? (valor / vendaTotal) * 100 : 0
+                    }))
+                    .sort((a, b) => b.valor - a.valor);
+
+                // Taxa de conversão
+                let taxaConversao = 0;
+                try {
+                    const analyticsUrl = `${CONFIG.API_BASE_URL}/analytics?date_from=${startDay.toISOString()}&date_to=${endDay.toISOString()}`;
+                    const analyticsResponse = await fetch(analyticsUrl, {
+                        headers: {
+                            'Authorization': `Bearer ${CONFIG.API_TOKEN}`
+                        }
+                    });
+                    if (analyticsResponse.ok) {
+                        const analyticsData = await analyticsResponse.json();
+                        const visitors = analyticsData.visitors || analyticsData.total_visitors || 1;
+                        taxaConversao = (quantidadePedidos / visitors) * 100;
+                    }
+                } catch (e) {
+                    console.warn('Analytics não disponível');
+                }
+
+                return {
+                    vendaTotal,
+                    quantidadePedidos,
+                    ingressoMedio,
+                    taxaConversao: Math.min(taxaConversao, 100),
+                    mercados
+                };
+
+            } catch (error) {
+                console.error('Erro:', error);
+                throw error;
             }
         }
 
+        // Update dashboard
         function updateDashboard(data) {
-            // Venda Total
-            const vendaTotal = data.vendaTotal || 0;
-            document.getElementById('vendaTotal').textContent = formatCurrency(vendaTotal);
+            document.getElementById('vendaTotal').textContent = formatCurrency(data.vendaTotal);
+            document.getElementById('quantidadePedidos').textContent = data.quantidadePedidos.toLocaleString('pt-BR');
+            document.getElementById('ingressoMedio').textContent = formatCurrency(data.ingressoMedio);
+            document.getElementById('taxaConversao').textContent = data.taxaConversao.toFixed(2) + '%';
 
-            // Quantidade de Pedidos
-            const quantidadePedidos = data.quantidadePedidos || 0;
-            document.getElementById('quantidadePedidos').textContent = quantidadePedidos.toLocaleString('pt-BR');
-
-            // Ingresso Médio
-            const ingressoMedio = data.ingressoMedio || 0;
-            document.getElementById('ingressoMedio').textContent = formatCurrency(ingressoMedio);
-
-            // Taxa de Conversão
-            const taxaConversao = data.taxaConversao || 0;
-            document.getElementById('taxaConversao').textContent = taxaConversao.toFixed(2) + '%';
-
-            // Venda por Mercado
             const mercadosGrid = document.getElementById('mercadosGrid');
             mercadosGrid.innerHTML = '';
-            
-            if (data.mercados && Array.isArray(data.mercados)) {
-                data.mercados.forEach(mercado => {
-                    const mercadoDiv = document.createElement('div');
-                    mercadoDiv.className = 'mercado-item';
-                    mercadoDiv.innerHTML = `
-                        <div class="mercado-nome">${mercado.nome}</div>
-                        <div class="mercado-valor">${formatCurrency(mercado.valor)}</div>
-                        <div class="mercado-percentual">${mercado.percentual.toFixed(1)}% do total</div>
-                    `;
-                    mercadosGrid.appendChild(mercadoDiv);
-                });
-            }
+            data.mercados.forEach(mercado => {
+                const div = document.createElement('div');
+                div.className = 'mercado-item';
+                div.innerHTML = `
+                    <div class="mercado-nome">${mercado.nome}</div>
+                    <div class="mercado-valor">${formatCurrency(mercado.valor)}</div>
+                    <div class="mercado-percentual">${mercado.percentual.toFixed(1)}% do total</div>
+                `;
+                mercadosGrid.appendChild(div);
+            });
 
-            updateTimestamp();
+            document.getElementById('timestamp').textContent = 
+                `Última atualização: ${new Date().toLocaleString('pt-BR')}`;
         }
 
         function formatCurrency(value) {
@@ -393,39 +344,47 @@
             }).format(value);
         }
 
-        function updateTimestamp() {
-            const now = new Date();
-            document.getElementById('timestamp').textContent = 
-                `Última atualização: ${now.toLocaleString('pt-BR')}`;
+        // Load dados
+        async function loadData() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('error').style.display = 'none';
+                document.getElementById('content').style.display = 'none';
+
+                const data = await fetchSalesData();
+                updateDashboard(data);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+                startCountdown();
+            } catch (err) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `❌ Erro: ${err.message}. Verifique o console (F12).`;
+                console.error(err);
+            }
         }
 
         function startCountdown() {
-            let secondsLeft = 300; // 5 minutos
-
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-
-            countdownInterval = setInterval(() => {
-                secondsLeft--;
-                const minutes = Math.floor(secondsLeft / 60);
-                const seconds = secondsLeft % 60;
-                
+            let secondsLeft = 300;
+            const update = () => {
+                const min = Math.floor(secondsLeft / 60);
+                const sec = secondsLeft % 60;
                 document.getElementById('nextUpdate').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-                if (secondsLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    loadDashboard();
+                    `${min}:${sec.toString().padStart(2, '0')}`;
+                secondsLeft--;
+                if (secondsLeft < 0) {
+                    loadData();
+                } else {
+                    setTimeout(update, 1000);
                 }
-            }, 1000);
+            };
+            update();
         }
 
-        // Carregar dados inicialmente
-        loadDashboard();
-
-        // Recarregar a cada 5 minutos
-        setInterval(loadDashboard, 5 * 60 * 1000);
+        // Carregar ao iniciar
+        loadData();
     </script>
 </body>
 </html>
