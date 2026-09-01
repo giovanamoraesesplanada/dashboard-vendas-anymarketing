@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Vendas - AnyMarketing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.5s ease;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .timestamp {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            margin-top: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 3.5em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card-subtext {
+            font-size: 1.2em;
+            color: #d0d0d0;
+            opacity: 0.8;
+        }
+
+        .card-label {
+            font-size: 0.95em;
+            color: #b0b0b0;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        /* Card específicos com cores */
+        .card.venda-total {
+            border-left: 8px solid #4CAF50;
+        }
+
+        .card.pedidos {
+            border-left: 8px solid #2196F3;
+        }
+
+        .card.ingresso-medio {
+            border-left: 8px solid #FF9800;
+        }
+
+        .card.taxa-conversao {
+            border-left: 8px solid #E91E63;
+        }
+
+        .mercados-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .mercado-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #FFD700;
+        }
+
+        .mercado-nome {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+
+        .mercado-valor {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .mercado-percentual {
+            font-size: 1.1em;
+            color: #b0b0b0;
+            margin-top: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.5em;
+            color: #fff;
+            padding: 40px;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 2px solid #f44336;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            animation: shake 0.5s ease;
+        }
+
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 5px solid #4CAF50;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .update-status {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #d0d0d0;
+        }
+
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        /* Gráfico de Venda por Mercado */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        /* Animações */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Responsive para TV */
+        @media (min-width: 2560px) {
+            body {
+                font-size: 24px;
+            }
+            .header h1 {
+                font-size: 5em;
+            }
+            .card-value {
+                font-size: 4.5em;
+            }
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .card-value {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Dashboard de Vendas</h1>
+            <p>AnyMarketing - Atualizações em Tempo Real</p>
+            <div class="timestamp" id="timestamp"></div>
+        </div>
+
+        <div id="loading" class="loading" style="display:none;">
+            ⏳ Carregando dados...
+        </div>
+
+        <div id="error" class="error" style="display:none;"></div>
+
+        <div id="content" style="display:none;">
+            <div class="grid">
+                <!-- Venda Total -->
+                <div class="card venda-total" data-card="venda-total">
+                    <div class="card-title">💰 Venda Total</div>
+                    <div class="card-value" id="vendaTotal">R$ 0,00</div>
+                    <div class="card-label">Receita Total do Dia</div>
+                </div>
+
+                <!-- Quantidade de Pedidos -->
+                <div class="card pedidos" data-card="pedidos">
+                    <div class="card-title">📦 Pedidos</div>
+                    <div class="card-value" id="quantidadePedidos">0</div>
+                    <div class="card-label">Pedidos (sem cancelados)</div>
+                </div>
+
+                <!-- Ingresso Médio -->
+                <div class="card ingresso-medio" data-card="ingresso">
+                    <div class="card-title">💳 Ticket Médio</div>
+                    <div class="card-value" id="ingressoMedio">R$ 0,00</div>
+                    <div class="card-label">Valor Médio por Pedido</div>
+                </div>
+
+                <!-- Taxa de Conversão -->
+                <div class="card taxa-conversao" data-card="taxa">
+                    <div class="card-title">📈 Taxa de Conversão</div>
+                    <div class="card-value" id="taxaConversao">0%</div>
+                    <div class="card-label">Taxa de Conversão</div>
+                </div>
+            </div>
+
+            <!-- Venda por Mercado -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-title">🏪 Venda por Mercado</div>
+                <div class="mercados-grid" id="mercadosGrid">
+                    <!-- Preenchido dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <div class="update-status">
+            <span id="updateIcon">⟳</span> Próxima atualização em <span id="nextUpdate">5:00</span>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="api.js"></script>
+    <script>
+        let updateInterval;
+        let countdownInterval;
+
+        async function loadDashboard() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const content = document.getElementById('content');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            content.style.display = 'none';
+
+            try {
+                const data = await fetchSalesData();
+                updateDashboard(data);
+                loading.style.display = 'none';
+                content.style.display = 'block';
+                error.style.display = 'none';
+                startCountdown();
+            } catch (err) {
+                console.error('Erro ao carregar dados:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.innerHTML = `❌ Erro ao carregar dados: ${err.message}`;
+                content.style.display = 'none';
+            }
+        }
+
+        function updateDashboard(data) {
+            // Venda Total
+            const vendaTotal = data.vendaTotal || 0;
+            document.getElementById('vendaTotal').textContent = formatCurrency(vendaTotal);
+
+            // Quantidade de Pedidos
+            const quantidadePedidos = data.quantidadePedidos || 0;
+            document.getElementById('quantidadePedidos').textContent = quantidadePedidos.toLocaleString('pt-BR');
+
+            // Ingresso Médio
+            const ingressoMedio = data.ingressoMedio || 0;
+            document.getElementById('ingressoMedio').textContent = formatCurrency(ingressoMedio);
+
+            // Taxa de Conversão
+            const taxaConversao = data.taxaConversao || 0;
+            document.getElementById('taxaConversao').textContent = taxaConversao.toFixed(2) + '%';
+
+            // Venda por Mercado
+            const mercadosGrid = document.getElementById('mercadosGrid');
+            mercadosGrid.innerHTML = '';
+            
+            if (data.mercados && Array.isArray(data.mercados)) {
+                data.mercados.forEach(mercado => {
+                    const mercadoDiv = document.createElement('div');
+                    mercadoDiv.className = 'mercado-item';
+                    mercadoDiv.innerHTML = `
+                        <div class="mercado-nome">${mercado.nome}</div>
+                        <div class="mercado-valor">${formatCurrency(mercado.valor)}</div>
+                        <div class="mercado-percentual">${mercado.percentual.toFixed(1)}% do total</div>
+                    `;
+                    mercadosGrid.appendChild(mercadoDiv);
+                });
+            }
+
+            updateTimestamp();
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = 
+                `Última atualização: ${now.toLocaleString('pt-BR')}`;
+        }
+
+        function startCountdown() {
+            let secondsLeft = 300; // 5 minutos
+
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(() => {
+                secondsLeft--;
+                const minutes = Math.floor(secondsLeft / 60);
+                const seconds = secondsLeft % 60;
+                
+                document.getElementById('nextUpdate').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    loadDashboard();
+                }
+            }, 1000);
+        }
+
+        // Carregar dados inicialmente
+        loadDashboard();
+
+        // Recarregar a cada 5 minutos
+        setInterval(loadDashboard, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
