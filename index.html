@@ -225,7 +225,7 @@
     <script>
         // Configuração
         const CONFIG = {
-            API_TOKEN: 'NzlGOUQ4QTMwRTlFQkVGOTIzMjI3NkZEQkYxN0E3RTk=.YY3YIulifD2rlJJR9NPQD+Vp6YKHg9lanwgSSyV7OmLjOk+12DSCeHJa0guaDv12gdyDB34DCCm+R+klnuXEsA==',
+            API_TOKEN: 'NzlGOUQ4QTMwRTlFQkVGOTIzMjI3NkZEQkYxN0E3RTk=.2oTvzUsb8ij1N6wB67KWT3aXqVDB8KBsf6bVAZjJhadC2WBO1KEPwziqlGrFmTGrhWMUmz8Zgm/x9nKJ3Na5hQ==',
             API_BASE_URL: 'https://api.anymarketing.com.br/v1',
             TIMEOUT: 30000
         };
@@ -239,6 +239,7 @@
 
                 const url = `${CONFIG.API_BASE_URL}/orders?created_from=${startDay.toISOString()}&created_to=${endDay.toISOString()}`;
 
+                console.log('Fetching from:', url);
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -249,10 +250,11 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
                 }
 
                 const data = await response.json();
+                console.log('API Response:', data);
                 const orders = data.data || data || [];
 
                 // Filtrar pedidos válidos
@@ -296,7 +298,7 @@
                         taxaConversao = (quantidadePedidos / visitors) * 100;
                     }
                 } catch (e) {
-                    console.warn('Analytics não disponível');
+                    console.warn('Analytics não disponível:', e);
                 }
 
                 return {
@@ -322,16 +324,21 @@
 
             const mercadosGrid = document.getElementById('mercadosGrid');
             mercadosGrid.innerHTML = '';
-            data.mercados.forEach(mercado => {
-                const div = document.createElement('div');
-                div.className = 'mercado-item';
-                div.innerHTML = `
-                    <div class="mercado-nome">${mercado.nome}</div>
-                    <div class="mercado-valor">${formatCurrency(mercado.valor)}</div>
-                    <div class="mercado-percentual">${mercado.percentual.toFixed(1)}% do total</div>
-                `;
-                mercadosGrid.appendChild(div);
-            });
+            
+            if (data.mercados.length === 0) {
+                mercadosGrid.innerHTML = '<p style="color: #b0b0b0;">Nenhuma venda hoje</p>';
+            } else {
+                data.mercados.forEach(mercado => {
+                    const div = document.createElement('div');
+                    div.className = 'mercado-item';
+                    div.innerHTML = `
+                        <div class="mercado-nome">${mercado.nome}</div>
+                        <div class="mercado-valor">${formatCurrency(mercado.valor)}</div>
+                        <div class="mercado-percentual">${mercado.percentual.toFixed(1)}% do total</div>
+                    `;
+                    mercadosGrid.appendChild(div);
+                });
+            }
 
             document.getElementById('timestamp').textContent = 
                 `Última atualização: ${new Date().toLocaleString('pt-BR')}`;
